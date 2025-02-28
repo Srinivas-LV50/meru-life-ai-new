@@ -1,0 +1,11 @@
+colang_version: 2.x
+
+instructions:
+- type: general
+  content: |
+    Below is a conversation between a personal ai companion please try to follow the system prompt each time 
+
+models:
+- type: main
+  engine: groq
+  model: llama3-70b-8192
