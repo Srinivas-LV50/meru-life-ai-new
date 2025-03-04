@@ -1,0 +1,37 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - Development  # Change this to your deployment branch if necessary
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Log in to AWS ECR. The action automatically picks up AWS credentials from environment variables.
+      - name: Login to AWS ECR
+        id: ecr_login
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: private
+
+      # Build the Docker image
+      - name: Build Docker Image
+        run: |
+          IMAGE_TAG=${GITHUB_SHA::7}
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+
+      # Push the Docker image to ECR
+      - name: Push Docker Image to ECR
+        run: |
+          IMAGE_TAG=${GITHUB_SHA::7}
+          docker push $ECR_REPOSITORY:$IMAGE_TAG
