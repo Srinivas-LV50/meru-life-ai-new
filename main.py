@@ -3,12 +3,23 @@ from pydantic import BaseModel
 from nemoguardrails import RailsConfig, LLMRails
 from langchain_groq import ChatGroq
 from nemoguardrails.llm.providers import register_llm_provider
+from fastapi.middleware.cors import CORSMiddleware
 import os
 
-os.environ["GROQ_API_KEY"] = ""
+os.environ.setdefault("GROQ_API_KEY", "")
 
 # Initialize FastAPI
 app = FastAPI()
+
+# Add CORS middleware to allow requests from any origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this list to restrict domains in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Register Groq as an LLM provider
 register_llm_provider("groq", ChatGroq)
